@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="chatTitle" type="id"/>
+    <item name="rvChat" type="id"/>
+    <item name="messageInputLayout" type="id"/>
+    <item name="etMessage" type="id"/>
+    <item name="btnSend" type="id"/>
+    <item name="smileyBackground" type="id"/>
+    <item name="tvProgress" type="id"/>
+</resources>

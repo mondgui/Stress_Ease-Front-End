@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StressEase</string>
+    <string name="stressease_bot">StressEase Bot</string>
+    <string name="type_a_message">Type a message…</string>
+    <string name="send">Send</string>
+    <string name="stressease_assistant">StressEase Assistant</string>
+    <string name="bot_icon">Bot icon</string>
+    <string name="bot_here">Bot_here</string>
+    <string name="chat">Chat</string>
+    <string name="Questionwillappearhere">Question will appear here</string>
+    <string name="Question_1_of_10">Question 1 to 10</string>
+    <string name="Sometimes">Sometimes</string>
+    <string name="Often">Often</string>
+    <string name="Always">Always</string>
+    <string name="Next">Next</string>
+    <string name="Never">Never</string>
+    <string name="Sample_Toast">Sample Tost</string>
+</resources>
