@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?android:attr/colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvReportTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ConditionReport"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingBottom="16dp"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <!-- Stats -->
+        <TextView
+            android:id="@+id/tvReportStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Total Entries: 0"
+            android:textSize="16sp"
+            android:paddingBottom="12dp"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/tvReportStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status: You are mostly Positive 🎉"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:gravity="center"
+            android:paddingBottom="20dp"
+            android:textColor="?android:attr/textColorSecondary" />
+
+        <!-- Bar Chart Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/chartBarCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+
+            android:radius="12dp"/>
+
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/moodChart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+        <!-- Pie Chart Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/chartPieCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:radius="12dp"/>
+
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/moodPieChart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+        <!-- Download PDF Button -->
+        <Button
+            android:id="@+id/btnDownloadPdf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Download Report as PDF"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="?android:attr/colorAccent"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+</ScrollView>
