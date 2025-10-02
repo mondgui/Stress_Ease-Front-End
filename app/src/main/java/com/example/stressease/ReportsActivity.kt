@@ -9,10 +9,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import java.io.File
 import java.io.FileOutputStream
 
@@ -21,197 +28,219 @@ class ReportsActivity : AppCompatActivity() {
     private lateinit var tvReportTitle: TextView
     private lateinit var tvReportStats: TextView
     private lateinit var tvReportStatus: TextView
-    private lateinit var moodChart: BarChart
+    private lateinit var emotionBarChart: BarChart
     private lateinit var moodPieChart: PieChart
-    private lateinit var btnDownloadPdf: Button
+    private lateinit var moodTrendChart: LineChart
+    private lateinit var btnBack: Button
+    private lateinit var btnViewSummary: Button
+    private lateinit var btnNext: Button
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
-    private var positive = 3
-    private var negative = 2
-    private var neutral = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reports)
 
-        // Initialize views
+        auth=FirebaseAuth.getInstance()
+        db= FirebaseFirestore.getInstance()
+
+
+        // Bind views
         tvReportTitle = findViewById(R.id.tvReportTitle)
         tvReportStats = findViewById(R.id.tvReportStats)
         tvReportStatus = findViewById(R.id.tvReportStatus)
-        moodChart = findViewById(R.id.moodChart)
+        emotionBarChart = findViewById(R.id.emotionBarChart)
         moodPieChart = findViewById(R.id.moodPieChart)
-        btnDownloadPdf = findViewById(R.id.btnDownloadPdf)
+        moodTrendChart = findViewById(R.id.moodTrendChart)
+        btnBack = findViewById(R.id.btnBack)
+        btnViewSummary = findViewById(R.id.btnViewSummary)
+        btnNext = findViewById(R.id.btnNext)
 
-        // Update report text
-        val total = positive + negative + neutral
-        tvReportStats.text = "Total Entries: $total\nPositive: $positive\nNegative: $negative\nNeutral: $neutral"
+        val moodList = SharedPreference.loadStringList(this, "moodLogs") // existing helper
+        val total = moodList.size
+        val positive = moodList.count { it == "Happy" || it == "Excited" }
+        val negative = moodList.count { it == "Sad" || it == "Angry" }
+        val neutral = total - positive - negative
 
-        // Set status with color
-        setStatusMessage()
+        saveAggregatedReport(total, positive, negative, neutral, moodList)
 
-        // Setup charts
-        resizeCharts()
-        setupBarChart(positive, negative, neutral)
-        setupPieChart(positive, negative, neutral)
+        // Load and process data
+        loadReports()
 
-        // Download PDF
-        btnDownloadPdf.setOnClickListener {
-            generateReportPdf()
+        // Navigation
+        btnBack.setOnClickListener { finish() }
+        btnViewSummary.setOnClickListener {
+            startActivity(Intent(this, Summary::class.java))
+        }
+        btnNext.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 
-    private fun setStatusMessage() {
-        var statusMsg: String
-        var statusColor: Int
+    private fun loadReports() {
 
-        when {
-            positive >= negative && positive >= neutral -> {
-                statusMsg = "Status: You are mostly Positive 🎉"
-                statusColor = Color.parseColor("#4CAF50") // Green
+
+        val moodHistory = SharedPreference.loadStringList(this, "mood_history")
+        val chatHistory = SharedPreference.loadChatList(this, "chat_history")
+
+        val chatEmotionCounts = chatHistory.groupingBy { chatMsg ->
+            val msg = chatMsg.message ?: ""   // default empty string if null
+            when {
+                msg.contains("good", true) || msg.contains("happy", true) || msg.contains("great", true) -> "Positive"
+                msg.contains("bad", true) || msg.contains("sad", true) || msg.contains("angry", true) -> "Negative"
+                else -> "Neutral"
             }
-            negative >= positive && negative >= neutral -> {
-                statusMsg = "Status: You are mostly Negative 😞"
-                statusColor = Color.parseColor("#F44336") // Red
+        }.eachCount()
+
+        val moodCounts = moodHistory.groupingBy { mood ->
+            when (mood) {
+                "Happy", "Excited", "Calm" -> "Positive"
+                "Sad", "Angry", "Stressed" -> "Negative"
+                else -> "Neutral"
             }
-            else -> {
-                statusMsg = "Status: You are Neutral 😐"
-                statusColor = Color.parseColor("#FFC107") // Yellow
-            }
+        }.eachCount()
+
+        val total = (chatEmotionCounts.values.sum() + moodCounts.values.sum())
+        val positive = (chatEmotionCounts["Positive"] ?: 0) + (moodCounts["Positive"] ?: 0)
+        val negative = (chatEmotionCounts["Negative"] ?: 0) + (moodCounts["Negative"] ?: 0)
+        val neutral = (chatEmotionCounts["Neutral"] ?: 0) + (moodCounts["Neutral"] ?: 0)
+
+        tvReportStats.text =
+            "Total Entries: $total\nPositive: $positive\nNegative: $negative\nNeutral: $neutral"
+
+        tvReportStatus.text = when {
+            positive > negative && positive > neutral -> "Status: You are mostly Positive 🎉"
+            negative > positive && negative > neutral -> "Status: You are mostly Negative 😟"
+            else -> "Status: Mixed Mood ⚖️"
         }
-        tvReportStatus.text = statusMsg
-        tvReportStatus.setTextColor(statusColor)
+
+        val mergedCounts = mapOf("Positive" to positive, "Negative" to negative, "Neutral" to neutral)
+        if (total > 0) {
+            showEmotionBarChart(mergedCounts)
+            showMoodPieChart(mergedCounts)
+            showMoodTrendChart(moodHistory)
+        }
     }
 
-    private fun setupBarChart(positive: Int, negative: Int, neutral: Int) {
-        val entries = listOf(
-            BarEntry(0f, positive.toFloat()),
-            BarEntry(1f, negative.toFloat()),
-            BarEntry(2f, neutral.toFloat())
+    private fun showEmotionBarChart(emotionCounts: Map<String, Int>) {
+        val entries = ArrayList<BarEntry>()
+        var index = 0
+        for ((_, count) in emotionCounts) {
+            entries.add(BarEntry(index.toFloat(), count.toFloat()))
+            index++
+        }
+        val dataSet = BarDataSet(entries, "Emotions")
+        dataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
+        dataSet.valueTextSize = 18f
+
+        val data = BarData(dataSet)
+        data.barWidth = 0.6f
+
+        emotionBarChart.data = data
+        emotionBarChart.setFitBars(true)
+        emotionBarChart.setDrawGridBackground(false)
+        emotionBarChart.description = Description().apply { text = "" }
+        emotionBarChart.legend.apply {
+            textSize = 16f
+            formSize = 16f
+            horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        }
+        emotionBarChart.animateY(1200)
+        emotionBarChart.invalidate()
+    }
+
+    private fun showMoodPieChart(emotionCounts: Map<String, Int>) {
+        val entries = ArrayList<PieEntry>()
+        for ((emotion, count) in emotionCounts) {
+            entries.add(PieEntry(count.toFloat(), emotion))
+        }
+        val dataSet = PieDataSet(entries, "Moods")
+        dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
+        dataSet.valueTextSize = 20f
+        dataSet.sliceSpace = 3f
+
+        val data = PieData(dataSet)
+        data.setValueTextSize(18f)
+
+        moodPieChart.data = data
+        moodPieChart.setUsePercentValues(true)
+        moodPieChart.setDrawEntryLabels(true)
+        moodPieChart.setEntryLabelTextSize(16f)
+        moodPieChart.description = Description().apply { text = "" }
+        moodPieChart.legend.apply {
+            textSize = 20f
+            formSize = 20f
+            horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        }
+        moodPieChart.animateY(1200)
+        moodPieChart.invalidate()
+    }
+
+    private fun showMoodTrendChart(moodHistory: List<String>) {
+        val entries = ArrayList<Entry>()
+        for ((index, mood) in moodHistory.withIndex()) {
+            val value = when (mood) {
+                "Happy" -> 3f
+                "Neutral" -> 2f
+                "Sad" -> 1f
+                "Angry" -> 0f
+                else -> 2f
+            }
+            entries.add(Entry(index.toFloat(), value))
+        }
+
+        val dataSet = LineDataSet(entries, "Mood Trend")
+        dataSet.colors = listOf(ColorTemplate.getHoloBlue())
+        dataSet.circleColors = listOf(ColorTemplate.getHoloBlue())
+        dataSet.valueTextSize = 20f
+        dataSet.lineWidth = 3f
+        dataSet.circleRadius = 5f
+
+        val data = LineData(dataSet)
+
+        moodTrendChart.data = data
+        moodTrendChart.description = Description().apply { text = "" }
+        moodTrendChart.legend.apply {
+            textSize = 20f
+            formSize = 16f
+            horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        }
+        moodTrendChart.axisLeft.textSize = 14f
+        moodTrendChart.axisRight.textSize = 14f
+        moodTrendChart.xAxis.textSize = 14f
+
+        moodTrendChart.animateX(1200)
+        moodTrendChart.invalidate()
+    }
+    private fun saveAggregatedReport(
+        total: Int,
+        positive: Int,
+        negative: Int,
+        neutral: Int,
+        moodHistory: List<String>
+    ) {
+        val userId = auth.currentUser?.uid ?: return
+        val reportData = hashMapOf(
+            "totalChats" to total,
+            "positiveCount" to positive,
+            "negativeCount" to negative,
+            "neutralCount" to neutral,
+            "last7DaysMood" to moodHistory.takeLast(7),
+            "lastUpdated" to System.currentTimeMillis()
         )
-        val dataSet = BarDataSet(entries, "Emotions").apply {
-            colors = listOf(Color.parseColor("#4CAF50"), Color.parseColor("#F44336"), Color.parseColor("#FFC107"))
-            valueTextSize = 18f
-            valueTextColor = getTextColor()
-        }
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.6f
 
-        moodChart.apply {
-            data = barData
-            description.isEnabled = false
-
-            xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(listOf("Positive", "Negative", "Neutral"))
-                position = XAxis.XAxisPosition.BOTTOM
-                textSize = 16f
-                textColor = getTextColor()
-                granularity = 1f
-                setDrawGridLines(false)
+        db.collection("users")
+            .document(userId)
+            .collection("reports")
+            .document("summary")
+            .set(reportData, SetOptions.merge())
+            .addOnSuccessListener {
+                tvReportStats.append("\n\n[Synced to Cloud ✅]")
             }
-
-            axisLeft.textSize = 16f
-            axisLeft.textColor = getTextColor()
-            axisRight.isEnabled = false
-
-            legend.textSize = 16f
-            legend.textColor = getTextColor()
-
-            setFitBars(true)
-            invalidate()
-        }
+            .addOnFailureListener {
+                tvReportStats.append("\n\n[Cloud Sync Failed ❌]")
+            }
     }
 
-    private fun setupPieChart(positive: Int, negative: Int, neutral: Int) {
-        val entries = listOf(
-            PieEntry(positive.toFloat(), "Positive"),
-            PieEntry(negative.toFloat(), "Negative"),
-            PieEntry(neutral.toFloat(), "Neutral")
-        )
-        val dataSet = PieDataSet(entries, "").apply {
-            colors = listOf(Color.parseColor("#4CAF50"), Color.parseColor("#F44336"), Color.parseColor("#FFC107"))
-            valueTextSize = 18f
-            valueTextColor = getTextColor()
-            sliceSpace = 4f
-        }
-        val pieData = PieData(dataSet)
-
-        moodPieChart.apply {
-            data = pieData
-            description.isEnabled = false
-            centerText = "Mood Share"
-            setCenterTextSize(20f)
-            setCenterTextColor(getTextColor())
-            setEntryLabelTextSize(16f)
-            setEntryLabelColor(getTextColor())
-            legend.textSize = 16f
-            legend.textColor = getTextColor()
-            invalidate()
-        }
-    }
-
-    private fun resizeCharts() {
-        val displayMetrics = resources.displayMetrics
-        val screenHeight = displayMetrics.heightPixels
-        val chartHeight = (screenHeight * 0.35).toInt()
-
-        moodChart.layoutParams.height = chartHeight
-        moodPieChart.layoutParams.height = chartHeight
-    }
-
-    private fun getTextColor(): Int {
-        val currentNightMode = resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
-        return if (currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES) Color.WHITE else Color.BLACK
-    }
-
-    private fun generateReportPdf() {
-        val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
-        val page = pdfDocument.startPage(pageInfo)
-        val canvas = page.canvas
-
-        val paint = android.graphics.Paint()
-        paint.textSize = 18f
-        paint.color = getTextColor()
-
-        var y = 50
-
-        // Title
-        paint.textSize = 24f
-        paint.isFakeBoldText = true
-        canvas.drawText("Condition Report", 200f, y.toFloat(), paint)
-
-        y += 60
-        paint.textSize = 18f
-        paint.isFakeBoldText = false
-
-        // Stats
-        canvas.drawText("Total Entries: ${positive + negative + neutral}", 50f, y.toFloat(), paint)
-        y += 30
-        canvas.drawText("Positive: $positive", 50f, y.toFloat(), paint)
-        y += 30
-        canvas.drawText("Negative: $negative", 50f, y.toFloat(), paint)
-        y += 30
-        canvas.drawText("Neutral: $neutral", 50f, y.toFloat(), paint)
-        y += 50
-
-        // Status
-        val statusMsg = tvReportStatus.text.toString()
-        paint.color = tvReportStatus.currentTextColor
-        canvas.drawText(statusMsg, 50f, y.toFloat(), paint)
-
-        pdfDocument.finishPage(page)
-
-        val file = File(getExternalFilesDir(null), "MoodReport.pdf")
-        try {
-            pdfDocument.writeTo(FileOutputStream(file))
-            pdfDocument.close()
-
-            // Open PDF Viewer Activity
-            val intent = Intent(this, PdfViewer::class.java)
-            intent.putExtra("pdfPath", file.absolutePath)
-            startActivity(intent)
-
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error saving PDF: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-    }
 }
