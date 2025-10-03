@@ -11,11 +11,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
 import android.widget.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-class QuizActivity:AppCompatActivity() {
+class QuizActivity : AppCompatActivity() {
 
         private var score = 0
         private var currentQ = 0
+
+        private lateinit var auth: FirebaseAuth
+        private lateinit var db: FirebaseFirestore
 
         private val questions = listOf(
             "I find it hard to relax.",
@@ -29,7 +34,6 @@ class QuizActivity:AppCompatActivity() {
             "I worry about things that may never happen.",
             "I feel tired even after resting."
         )
-
         private val scoresList = listOf(0, 1, 2, 3) // Never → Always
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,8 +45,18 @@ class QuizActivity:AppCompatActivity() {
             val progressBar = findViewById<ProgressBar>(R.id.progressBar)
             val radioGroup = findViewById<RadioGroup>(R.id.radioGroup)
             val nextBtn = findViewById<Button>(R.id.btnNext)
+            val back = findViewById<Button>(R.id.btnback)
 
-            updateUI(questionTv, progressTv, radioGroup, progressBar)
+            auth= FirebaseAuth.getInstance()
+            db= FirebaseFirestore.getInstance()
+
+
+            val prefs = getSharedPreferences("StressEasePrefs", MODE_PRIVATE)
+            val email = prefs.getString("loggedInUser", "guest") ?: "guest"
+
+
+            showQuestion(currentQ, questionTv, progressTv, radioGroup, progressBar)
+
 
             nextBtn.setOnClickListener {
                 val selectedId = radioGroup.checkedRadioButtonId
@@ -51,21 +65,17 @@ class QuizActivity:AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                val index = radioGroup.indexOfChild(findViewById(selectedId))
-                score += scoresList[index]
+                val selectedIndex = radioGroup.indexOfChild(findViewById(selectedId))
+                score += scoresList[selectedIndex]
                 currentQ++
 
                 if (currentQ < questions.size) {
-                    updateUI(questionTv, progressTv, radioGroup, progressBar)
+                    showQuestion(currentQ, questionTv, progressTv, radioGroup, progressBar)
                 } else {
+                    saveScore(score)
                     val suggestion = generateSuggestion(score)
-
-                    // Save results for current user
-                    val prefs = getSharedPreferences("StressEasePrefs", MODE_PRIVATE)
-                    val email = prefs.getString("loggedInUser", "guest") ?: "guest"
                     saveToPrefs(email, score, suggestion)
 
-                    // Go to Result Activity
                     val intent = Intent(this, Suggestions::class.java)
                     intent.putExtra("score", score)
                     intent.putExtra("suggestion", suggestion)
@@ -73,23 +83,29 @@ class QuizActivity:AppCompatActivity() {
                     finish()
                 }
             }
+            back.setOnClickListener {
+                if (currentQ > 0) {
+                    currentQ--
+                    showQuestion(currentQ, questionTv, progressTv, radioGroup, progressBar)
+                } else {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
+            }
         }
-
-        private fun updateUI(
-            qTv: TextView,
-            pTv: TextView,
-            rg: RadioGroup,
+        private fun showQuestion(
+            index: Int,
+            questionTv: TextView,
+            progressTv: TextView,
+            radioGroup: RadioGroup,
             progressBar: ProgressBar
         ) {
-            qTv.text = questions[currentQ]
-            pTv.text = "Question ${currentQ + 1} of ${questions.size}"
-
-            val progressPercent = ((currentQ + 1).toFloat() / questions.size * 100).toInt()
-            progressBar.progress = progressPercent
-
-            rg.clearCheck()
+            questionTv.text = questions[index]
+            progressTv.text = "Question ${index + 1}/${questions.size}"
+            progressBar.max = questions.size
+            progressBar.progress = index + 1
+            radioGroup.clearCheck()
         }
-
         private fun generateSuggestion(score: Int): String {
             return when {
                 score < 10 -> "Low stress. Maintain healthy routines and relaxation."
@@ -99,6 +115,8 @@ class QuizActivity:AppCompatActivity() {
         }
         private fun saveToPrefs(email: String, score: Int, suggestion: String) {
             val prefs = getSharedPreferences("StressEasePrefs", MODE_PRIVATE)
+            prefs.edit().putInt("last_quiz_score_$email", score).apply()
+
             val quizzes = prefs.getString("quizHistory_$email", "[]")
             val arr = JSONArray(quizzes)
 
@@ -110,7 +128,6 @@ class QuizActivity:AppCompatActivity() {
 
             prefs.edit().putString("quizHistory_$email", arr.toString()).apply()
         }
-
         private fun showCustomToast(message: String) {
             val inflater: LayoutInflater = layoutInflater
             val layout = inflater.inflate(R.layout.custom_toast, null)
@@ -122,4 +139,23 @@ class QuizActivity:AppCompatActivity() {
             toast.view = layout
             toast.show()
         }
-}
+        private fun saveScore(score: Int) {
+            val userId = auth.currentUser?.uid ?: return
+
+            val scoreData = hashMapOf(
+                "score" to score,
+                "createdAt" to System.currentTimeMillis()
+            )
+            db.collection("users")
+                .document(userId)
+                .collection("moods")
+                .add(scoreData)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Score saved: $score", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to save score", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
