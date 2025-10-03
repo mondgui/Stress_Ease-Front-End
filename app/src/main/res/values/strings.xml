@@ -16,4 +16,7 @@
     <string name="Next">Next</string>
     <string name="Never">Never</string>
     <string name="Sample_Toast">Sample Tost</string>
+
+    <string name="ConditionReport">Condition Report</string>
+
 </resources>

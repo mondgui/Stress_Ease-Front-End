@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MoodActivity">
+
+    <EditText
+        android:id="@+id/moodInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="How are you feeling today?"
+        android:inputType="textCapSentences" />
+
+    <Button
+        android:id="@+id/analyzeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="Analyze Mood" />
+
+    <TextView
+        android:id="@+id/resultView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Your mood analysis will appear here."
+        android:textSize="16sp" />
+
+</LinearLayout>
