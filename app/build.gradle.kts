@@ -9,6 +9,15 @@ android {
     namespace = "com.example.stressease"
     compileSdk = 35
 
+    android {
+        // ... other settings like compileSdk, defaultConfig ...
+
+        buildFeatures {
+            viewBinding = true
+        }
+    }
+
+
     defaultConfig {
 
         applicationId = "com.example.stressease"
