@@ -73,4 +73,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core.v351)
 
+
+
+    // Add this line for the PDF Viewer
+    implementation(libs.android.pdf.viewer)
+
 }
