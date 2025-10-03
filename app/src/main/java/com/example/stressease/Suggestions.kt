@@ -1,14 +1,25 @@
 package com.example.stressease
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class Suggestions : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_suggestion)
-
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_suggestion)
+         val back:Button=findViewById<Button>(R.id.btnBack)
+         val front:Button=findViewById<Button>(R.id.btnNext)
+         back.setOnClickListener {
+             startActivity(Intent(this, QuizActivity::class.java))
+             finish()
+         }
+         front.setOnClickListener {
+             startActivity(Intent(this, MoodActivity::class.java))
+             finish()
+         }
             val score = intent.getIntExtra("score", 0)
             val suggestion = intent.getStringExtra("suggestion") ?: "No suggestion available"
 
