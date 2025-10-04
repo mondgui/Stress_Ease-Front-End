@@ -7,4 +7,11 @@
     <item name="btnSend" type="id"/>
     <item name="smileyBackground" type="id"/>
     <item name="tvProgress" type="id"/>
+    <item name="moodInput" type="id"/>
+    <item name="analyzeBtn" type="id"/>
+    <item name="resultView" type="id"/>
+    <item name="tvConditionReport" type="id"/>
+    <item name="moodPieChart" type="id"/>
+    <item name="emotionBarChart" type="id"/>
+    <item name="moodTrendChart" type="id"/>
 </resources>

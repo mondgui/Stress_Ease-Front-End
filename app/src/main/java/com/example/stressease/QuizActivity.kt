@@ -73,6 +73,7 @@ class QuizActivity : AppCompatActivity() {
                     showQuestion(currentQ, questionTv, progressTv, radioGroup, progressBar)
                 } else {
                     saveScore(score)
+                    saveScoreToLeaderboard(score)
                     val suggestion = generateSuggestion(score)
                     saveToPrefs(email, score, suggestion)
 
@@ -157,5 +158,26 @@ class QuizActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failed to save score", Toast.LENGTH_SHORT).show()
                 }
         }
+    private fun saveScoreToLeaderboard(score: Int) {
+        val db = FirebaseFirestore.getInstance()
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+            val leaderboardEntry = hashMapOf(
+                "username" to (user.email ?: "Unknown"),
+                "score" to score
+            )
+
+            // Save or update user’s score
+            db.collection("leaderboard").document(user.uid)
+                .set(leaderboardEntry) // overwrites old score
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Score updated on leaderboard!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed to update score: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
+}
 

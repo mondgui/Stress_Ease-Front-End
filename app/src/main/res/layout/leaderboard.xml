@@ -6,7 +6,8 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@drawable/bg_chat_gradient">
         <TextView
             android:id="@+id/tvLeaderboardTitle"
             android:layout_width="wrap_content"
@@ -14,8 +15,7 @@
             android:text="Leaderboard"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_gravity="center"
-            android:marginBottom="12dp"/>
+            android:layout_gravity="center"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerLeaderboard"
             android:layout_width="match_parent"

@@ -1,5 +1,7 @@
 package com.example.stressease
 
+import android.R.id.message
+import android.content.Context
 import android.content.Intent
 import android.widget.EditText
 import android.widget.ImageButton
@@ -18,6 +20,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -32,11 +38,9 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-
 
         recyclerView = findViewById(R.id.rvChat)
         etMessage = findViewById(R.id.etMessage)
@@ -47,7 +51,7 @@ class ChatActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-
+        // Load old chat history from SharedPreferences
         messages = SharedPreference.loadChatList(this, "chat_history")
 
         recyclerView.layoutManager = LinearLayoutManager(this).apply {
@@ -56,15 +60,14 @@ class ChatActivity : AppCompatActivity() {
         chatAdapter = ChatAdapter(messages)
         recyclerView.adapter = chatAdapter
 
-
         btnSend.setOnClickListener {
             val userMessage = etMessage.text.toString().trim()
             if (userMessage.isNotEmpty()) {
-                addMessage(ChatMessage(userMessage, isUser = true, emotion = "neutral",message=userMessage))
-                saveChatMessage(ChatMessage(userMessage,isUser = true, emotion = "neutral",message=userMessage))
-                Toast.makeText(this, "Message saved", Toast.LENGTH_SHORT).show()
+                val chat = ChatMessage(userMessage, isUser = true, emotion = "neutral", message = userMessage)
+                addMessage(chat)
+                saveChatMessage(chat)
                 etMessage.text.clear()
-                sendMessage(userMessage)
+                sendMessage(userMessage) // now works properly
             }
         }
 
@@ -77,65 +80,96 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
     }
+
     private fun addMessage(chatMessage: ChatMessage) {
         messages.add(chatMessage)
         chatAdapter.notifyItemInserted(messages.size - 1)
         recyclerView.scrollToPosition(messages.size - 1)
-
         SharedPreference.saveChatList(this, "chat_history", messages)
     }
+    private var currentSessionId :String?=null
 
     private fun sendMessage(userMessage: String) {
+        val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val token = prefs.getString("authToken", null)
 
-        addMessage(ChatMessage("Analyzing...", isUser = false, emotion = "neutral",message=userMessage))
+        if (token == null) {
+            Toast.makeText(this, "No token found. Please log in again.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        val request = mapOf("message" to userMessage)
+        val request = ChatRequest(userMessage, session_id = currentSessionId)
 
-        RetrofitClient.api.sendChat(request).enqueue(object : Callback<Map<String, String>> {
-            override fun onResponse(
-                call: Call<Map<String, String>>,
-                response: Response<Map<String, String>>
-            ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
 
-                if (messages.isNotEmpty() && messages.last().text == "Analyzing...") {
-                    messages.removeAt(messages.size - 1)
-                    chatAdapter.notifyItemRemoved(messages.size)
+                  val response = RetrofitClient.api.sendMessage("Bearer $token", request)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val chatResp = response.body()!!
+                        val botReply = chatResp.ai_response?.content ?: "No reply"
+
+                        // Add user message
+                        addMessage(
+                            ChatMessage(
+                                userMessage,
+                                isUser = true,
+                                emotion = "neutral",
+                                message = userMessage
+                            )
+                        )
+
+                        // Add bot reply
+                        addMessage(
+                            ChatMessage(
+                                botReply,
+                                isUser = false,
+                                emotion = chatResp.ai_response?.role ?: "assistant",
+                                message = botReply
+                            )
+                        )
+
+                        // Save session id for continuity
+                        chatResp.session_id?.let { currentSessionId = it }
+                    } else {
+                        addMessage(
+                            ChatMessage(
+                                "Error: ${response.code()}",
+                                isUser = false,
+                                emotion = "neutral",
+                                message = ""
+                            )
+                        )
+                    }
                 }
 
-                if (response.isSuccessful && response.body() != null) {
-                    val body = response.body()!!
-                    val botReply = body["reply"] ?: "No response"
-                    val emotion = body["emotion"] ?: "neutral"
-                    addMessage(ChatMessage(botReply, isUser = false, emotion = emotion,message=userMessage))
-                } else {
-                    addMessage(ChatMessage("Error: Could not get response", isUser = false,emotion="Neutral",message=userMessage))
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    addMessage(
+                        ChatMessage(
+                            "Failed: ${e.localizedMessage}",
+                            isUser = false,
+                            emotion = "neutral",
+                            message = ""
+                        )
+                    )
                 }
             }
-
-            override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                if (messages.isNotEmpty() && messages.last().text == "Analyzing...") {
-                    messages.removeAt(messages.size - 1)
-                    chatAdapter.notifyItemRemoved(messages.size)
-                }
-                addMessage(ChatMessage("Failed to connect: ${t.message}", isUser = false,emotion="Neutral",message=userMessage))
-            }
-        })
+        }
     }
-    private fun saveChatMessage(chatMessage: ChatMessage){
+
+    private fun saveChatMessage(chatMessage: ChatMessage) {
         val userId = auth.currentUser?.uid ?: return
         val chatData = hashMapOf(
             "message" to chatMessage.text,
-            "sender" to "user",
+            "sender" to if (chatMessage.isUser) "user" else "bot",
             "emotion" to chatMessage.emotion,
             "timestamp" to System.currentTimeMillis()
-
         )
         db.collection("users")
             .document(userId)
             .collection("chats")
             .add(chatData)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Chat saved", Toast.LENGTH_SHORT).show()
-            }
     }
 }

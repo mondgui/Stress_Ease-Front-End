@@ -18,17 +18,21 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvChat"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="12dp"
             android:clipToPadding="false"
             android:overScrollMode="never"
-            app:layout_constraintTop_toTopOf="parent"
+            android:padding="12dp"
             app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
         <LinearLayout
             android:id="@+id/messageInputLayout"
             android:layout_width="0dp"
@@ -63,6 +67,29 @@
                 android:src="@drawable/ic_send"
                 app:tint="@android:color/white"
                 tools:ignore="ImageContrastCheck" />
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="112dp"
+            android:layout_height="71dp"
+            android:layout_marginBottom="660dp"
+            android:text="Next"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="111dp"
+            android:layout_height="66dp"
+            android:layout_marginBottom="660dp"
+            android:text="Back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
