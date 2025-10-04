@@ -53,7 +53,6 @@ class MoodActivity: AppCompatActivity() {
             startActivity(Intent(this, QuizActivity::class.java))
             finish()
         }
-
         next.setOnClickListener {
             val selectedMood = mood.selectedItem?.toString()
             if (selectedMood.isNullOrEmpty()) {
