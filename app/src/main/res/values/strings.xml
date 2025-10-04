@@ -16,7 +16,17 @@
     <string name="Next">Next</string>
     <string name="Never">Never</string>
     <string name="Sample_Toast">Sample Tost</string>
-
+    <string name="AnalyzeMood">Analyze Mood</string>
+    <string name="Howareyoufeelingtoday">How are you feeling today ?</string>
+    <string name="Yourmoodanalysiswillappearhere">Your mood analysis will appear here</string>
+    <string name="Typehowyoufeeltoday">Type your feelings</string>
     <string name="ConditionReport">Condition Report</string>
-
+    <string name="status_you_are_mostly_positive">Status: You are mostly Positive 🎉</string>
+    <string-array name="mood_options">
+        <item>Happy</item>
+        <item>Sad</item>
+        <item>Neutral</item>
+        <item>Angry</item>
+        <item>Excited</item>
+    </string-array>
 </resources>

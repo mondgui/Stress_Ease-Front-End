@@ -1,86 +1,10 @@
-package com.example.stressease // Make sure this package name is correct
-
-import android.content.Intent
-import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.semantics.error
-import androidx.compose.ui.semantics.text
-import com.example.stressease.databinding.ActivityLoginBinding // This will be auto-generated
-import kotlin.text.isEmpty
-import kotlin.text.trim
-
-class LoginActivity : AppCompatActivity() {
-
-    // Declare a variable for view binding
-    private lateinit var binding: ActivityLoginBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Inflate the layout and set the content view
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        // Set up the click listener for the login button
-        binding.loginButton.setOnClickListener {
-            handleLogin()
-        }
-
-        // Set up the click listener for the "Sign Up" text
-        binding.signUpText.setOnClickListener {
-            // For now, just show a message. You can navigate to a SignUpActivity later.
-            Toast.makeText(this, "Sign Up clicked!", Toast.LENGTH_SHORT).show()
-            // Example:
-            // val intent = Intent(this, SignUpActivity::class.java)
-            // startActivity(intent)
-        }
-    }
-
-    private fun handleLogin() {
-        val email = binding.emailEditText.text.toString().trim()
-        val password = binding.passwordEditText.text.toString().trim()
-
-        // --- Basic Validation ---
-        if (email.isEmpty()) {
-            binding.emailInputLayout.error = "Email cannot be empty"
-            return
-        } else {
-            // Clear error if user corrects it
-            binding.emailInputLayout.error = null
-        }
-
-        if (password.isEmpty()) {
-            binding.passwordInputLayout.error = "Password cannot be empty"
-            return
-        } else {
-            // Clear error if user corrects it
-            binding.passwordInputLayout.error = null
-        }
-
-        // --- Authentication Logic ---
-        // TODO: Replace this with your actual authentication logic (e.g., Firebase, your own backend)
-
-        // For demonstration, we'll use a simple hardcoded check
-        if (email == "user@example.com" && password == "password123") {
-            Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
-
-            // Navigate to the main part of the app
-            val intent = Intent(this, MainActivity::class.java)
-            // Clear the task stack so the user can't go back to the login screen
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-
-        } else {
-            Toast.makeText(this, "Invalid email or password", Toast.LENGTH_LONG).show()
-        }
-    }
-}
 package com.example.stressease
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -89,123 +13,93 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity: AppCompatActivity() {
-
-    private lateinit var etEmail: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var btnLogin: Button
-    private lateinit var btnRegister: Button
     private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
+    private lateinit var emailInput: EditText
+    private lateinit var passwordInput: EditText
+    private lateinit var loginBtn: Button
+    private lateinit var registerBtn: Button
+    private lateinit var pref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
 
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btnLogin = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegister)
-        // Initialize Firebase Auth and Firestore
-
         auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
 
-        val prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        emailInput = findViewById(R.id.etEmail)
+        passwordInput = findViewById(R.id.etPassword)
+        loginBtn = findViewById(R.id.btnLogin)
+        registerBtn = findViewById(R.id.btnRegister)
 
+        pref=getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
 
-        btnLogin.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+        loginBtn.setOnClickListener {
+            val email = emailInput.text.toString().trim()
+            val password = passwordInput.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            } else {
+            if (email.isNotEmpty() && password.isNotEmpty()) {
                 loginUser(email, password)
-            }
-
-            val savedPassword = prefs.getString(email, null)
-
-            if (savedPassword == password) {
-                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            } else if (savedPassword == null) {
-                Toast.makeText(
-                    this,
-                    "User not registered. Please register first.",
-                    Toast.LENGTH_SHORT
-                ).show()
             } else {
-                Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
         }
 
-        btnRegister.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+        registerBtn.setOnClickListener {
+            val email = emailInput.text.toString().trim()
+            val password = passwordInput.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            else{
+            if (email.isNotEmpty() && password.isNotEmpty()) {
                 registerUser(email, password)
+            } else {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             }
-
-            val editor = prefs.edit()
-            editor.putString(email, password)
-            editor.apply()
-
-            Toast.makeText(this, "Registration successful. You can now login.", Toast.LENGTH_SHORT)
-                .show()
         }
     }
 
     private fun loginUser(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Login Failed: ${task.exception?.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                saveToken()
+            } else {
+                Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     private fun registerUser(email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userId = auth.currentUser?.uid
-                    val userMap = hashMapOf(
-                        "email" to email,
-                        "createdAt" to System.currentTimeMillis()
-                    )
-                    if (userId != null) {
-                        db.collection("users").document(userId).set(userMap)
-                    }
-                    Toast.makeText(this, "User Registered Successfully", Toast.LENGTH_SHORT)
-                        .show()
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                saveToken()
+            } else {
+                Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun saveToken() {
+        val currentUser = auth.currentUser
+        currentUser?.getIdToken(true)
+            ?.addOnSuccessListener { result ->
+                val idToken = result.token
+                if (!idToken.isNullOrEmpty()) {
+                    val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
+                    prefs.edit().putString("authToken", idToken).apply()
+                    Log.d("LoginActivity", "Token saved: $idToken")
+
+                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                    
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(
-                        this,
-                        "Registration Failed: ${task.exception?.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this, "Token fetch failed", Toast.LENGTH_SHORT).show()
                 }
+            }
+            ?.addOnFailureListener { e ->
+                Log.e("LoginActivity", "Token fetch error: ${e.message}")
+                Toast.makeText(this, "Failed to fetch token", Toast.LENGTH_SHORT).show()
             }
     }
 }
-
 
 
 

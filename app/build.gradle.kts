@@ -3,20 +3,12 @@ import org.gradle.kotlin.dsl.testImplementation
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.stressease"
     compileSdk = 35
-
-    android {
-        // ... other settings like compileSdk, defaultConfig ...
-
-        buildFeatures {
-            viewBinding = true
-        }
-    }
-
 
     defaultConfig {
 
@@ -30,7 +22,6 @@ android {
 
 
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -50,15 +41,18 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    configurations.all {
+        exclude(group = "com.android.support")
+        exclude(group = "android.support")
+    }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation(libs.core.ktx.v1120)
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.8.2")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
-
-    // RecyclerView
+    implementation(libs.androidx.activity.ktx.v182)
+    implementation(libs.constraintlayout.v220)
+    implementation(libs.mhiew.android.pdf.viewer)
     implementation(libs.androidx.recyclerview)
 
     // Retrofit & OkHttp for API calls
@@ -82,9 +76,23 @@ dependencies {
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core.v351)
 
+    //Firebase
+    // Firebase BOM (manages versions)
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
+// Firebase Authentication
+    implementation("com.google.firebase:firebase-auth")
+
+// Firebase Firestore (for reports, moods, chat etc.)
+    implementation("com.google.firebase:firebase-firestore")
+
+// (Optional) Realtime Database
+    implementation("com.google.firebase:firebase-database")
+
+// (Optional) Analytics
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
 
-    // Add this line for the PDF Viewer
-    implementation(libs.android.pdf.viewer)
 
 }

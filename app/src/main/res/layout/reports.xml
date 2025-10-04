@@ -1,90 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="?android:attr/colorBackground">
+    android:background="@drawable/bg_chat_gradient">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvReportTitle"
+    <ScrollView
+        android:id="@+id/scrollViewReports"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/navBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ConditionReport"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:paddingBottom="16dp"
-            android:textColor="?android:attr/textColorPrimary" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Stats -->
-        <TextView
-            android:id="@+id/tvReportStats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Total Entries: 0"
-            android:textSize="16sp"
-            android:paddingBottom="12dp"
-            android:textColor="?android:attr/textColorPrimary" />
 
-        <!-- Status -->
-        <TextView
-            android:id="@+id/tvReportStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Status: You are mostly Positive 🎉"
-            android:textSize="18sp"
-            android:textStyle="italic"
-            android:gravity="center"
-            android:paddingBottom="20dp"
-            android:textColor="?android:attr/textColorSecondary" />
+            <TextView
+                android:id="@+id/tvReportTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Condition Report"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:padding="8dp"/>
 
-        <!-- Bar Chart Card -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/chartBarCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
 
-            android:radius="12dp"/>
+            <TextView
+                android:id="@+id/tvReportStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total Entries: 0\nPositive: 0\nNegative: 0\nNeutral: 0"
+                android:textSize="16sp"
+                android:padding="8dp"/>
+
+
+            <TextView
+                android:id="@+id/tvReportStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status: ..."
+                android:textSize="16sp"
+                android:padding="8dp"/>
 
 
             <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/moodChart"
+                android:id="@+id/emotionBarChart"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-
-        <!-- Pie Chart Card -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/chartPieCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:radius="12dp"/>
-
+                android:layout_height="250dp"
+                android:layout_marginTop="12dp"/>
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/moodPieChart"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="250dp"
+                android:layout_marginTop="12dp"/>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/moodTrendChart"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="12dp"/>
+        </LinearLayout>
+    </ScrollView>
 
 
-        <!-- Download PDF Button -->
+    <LinearLayout
+        android:id="@+id/navBar"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
         <Button
-            android:id="@+id/btnDownloadPdf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Download Report as PDF"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="?android:attr/colorAccent"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:id="@+id/btnBack"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="107dp"
+            android:layout_height="68dp"
+            android:text="Back" />
+
+        <Button
+            android:id="@+id/btnViewSummary"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="73dp"
+            android:text="View Summary" />
+
+        <Button
+            android:id="@+id/btnNext"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="112dp"
+            android:layout_height="68dp"
+            android:text="Next" />
+
     </LinearLayout>
-</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
