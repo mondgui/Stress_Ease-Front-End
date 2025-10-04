@@ -9,6 +9,15 @@ android {
     namespace = "com.example.stressease"
     compileSdk = 35
 
+    android {
+        // ... other settings like compileSdk, defaultConfig ...
+
+        buildFeatures {
+            viewBinding = true
+        }
+    }
+
+
     defaultConfig {
 
         applicationId = "com.example.stressease"
@@ -72,5 +81,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core.v351)
+
+
+
+    // Add this line for the PDF Viewer
+    implementation(libs.android.pdf.viewer)
 
 }
