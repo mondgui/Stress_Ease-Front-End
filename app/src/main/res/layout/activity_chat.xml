@@ -21,27 +21,30 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvChat"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="431dp"
+            android:layout_height="507dp"
             android:clipToPadding="false"
             android:overScrollMode="never"
             android:padding="12dp"
             app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.903" />
 
         <LinearLayout
             android:id="@+id/messageInputLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="439dp"
+            android:layout_height="98dp"
+            android:layout_marginBottom="32dp"
             android:orientation="horizontal"
             android:padding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.505"
+            app:layout_constraintStart_toStartOf="parent">
+
             <EditText
                 android:id="@+id/etMessage"
                 android:layout_width="0dp"
@@ -51,12 +54,13 @@
                 android:background="@drawable/bg_input_box"
                 android:hint="@string/type_a_message"
                 android:inputType="text"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 android:padding="14dp"
                 android:textColor="@color/text_black"
                 android:textColorHint="@color/text_black"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 tools:ignore="VisualLintTextFieldSize" />
+
             <ImageButton
                 android:id="@+id/btnSend"
                 android:layout_width="64dp"
@@ -72,24 +76,40 @@
 
         <Button
             android:id="@+id/btnNext"
-            android:layout_width="112dp"
-            android:layout_height="71dp"
-            android:layout_marginBottom="660dp"
-            android:text="Next"
+            android:layout_width="100dp"
+            android:layout_height="68dp"
+            android:layout_marginBottom="716dp"
+            android:text="History"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.897"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btnBack"
-            android:layout_width="111dp"
-            android:layout_height="66dp"
-            android:layout_marginBottom="660dp"
-            android:text="Back"
+            android:layout_width="101dp"
+            android:layout_height="67dp"
+            android:layout_marginBottom="716dp"
+            android:text="SOS"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.081"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="228dp"
+            android:layout_height="69dp"
+            android:layout_marginBottom="712dp"
+            android:text="Stress  Bot"
+            android:textAlignment="center"
+            android:textColor="@color/text_black"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

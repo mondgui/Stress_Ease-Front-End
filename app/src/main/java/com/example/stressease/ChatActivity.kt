@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatActivity : AppCompatActivity() {
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var etMessage: EditText
     private lateinit var btnSend: ImageButton
@@ -72,11 +73,11 @@ class ChatActivity : AppCompatActivity() {
         }
 
         next.setOnClickListener {
-            startActivity(Intent(this, ReportsActivity::class.java))
+            startActivity(Intent(this, History::class.java))
             finish()
         }
         prev.setOnClickListener {
-            startActivity(Intent(this, MoodActivity::class.java))
+            startActivity(Intent(this, SOS::class.java))
             finish()
         }
     }
@@ -100,10 +101,10 @@ class ChatActivity : AppCompatActivity() {
 
         val request = ChatRequest(userMessage, session_id = currentSessionId)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch{
             try {
 
-                  val response = RetrofitClient.api.sendMessage("Bearer $token", request)
+                val response = RetrofitClient.api.sendMessage("Bearer $token", request)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
@@ -158,7 +159,6 @@ class ChatActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun saveChatMessage(chatMessage: ChatMessage) {
         val userId = auth.currentUser?.uid ?: return
         val chatData = hashMapOf(
