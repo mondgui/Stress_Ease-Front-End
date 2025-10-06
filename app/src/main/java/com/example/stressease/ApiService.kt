@@ -17,6 +17,21 @@ data class AiResponse(
 
 data class ChatResponse(val reply: String, val emotion: String,val ai_response: AiResponse?,val session_id:String?)
 
+data class CrisisContact(
+    val id: String?,
+    val type: String?,
+    val name: String?,
+    val number: String?,
+    val description: String?,
+    val website: String?,
+    val availability: String?,
+    val country: String?,
+    val priority: Int?
+)
+
+data class CrisisResponse(val success: Boolean,
+                          val message: String?,
+                          val contacts: List<CrisisContact>?)
 
 interface ApiService {
     @POST("api/chat/message") // for real time chat
@@ -24,5 +39,9 @@ interface ApiService {
 
     @POST("mood/log") //for sentiment analysis /text extraction and generation
     fun logMood(@Body payload: Map<String, String>): Call<Map<String, String>>
+
+    @GET("api/crisis-contacts")
+    suspend fun getCrisisContacts(
+        @Header("Authorization") authHeader: String): Response<CrisisResponse>
 }
 
