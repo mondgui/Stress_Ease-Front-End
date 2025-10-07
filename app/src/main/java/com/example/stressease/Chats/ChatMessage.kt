@@ -1,4 +1,4 @@
-package com.example.stressease
+package com.example.stressease.Chats
 
 import android.icu.text.SimpleDateFormat
 import java.util.Date

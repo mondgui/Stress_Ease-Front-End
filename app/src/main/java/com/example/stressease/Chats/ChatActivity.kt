@@ -1,23 +1,22 @@
-package com.example.stressease
+package com.example.stressease.Chats
 
-import android.R.id.message
-import android.content.Context
 import android.content.Intent
 import android.widget.EditText
 import android.widget.ImageButton
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.stressease.ChatAdapter
-import com.example.stressease.ChatMessage
-import com.example.stressease.RetrofitClient
-import com.example.stressease.SharedPreference
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.stressease.LocalStorageOffline.SharedPreference
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.stressease.Api.AiResponse
+import com.example.stressease.Api.ApiService
+import com.example.stressease.Api.ChatRequest
+import com.example.stressease.Api.ChatResponse
+import com.example.stressease.History.History
+import com.example.stressease.R
+import com.example.stressease.SOS.SOS
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -91,7 +90,7 @@ class ChatActivity : AppCompatActivity() {
     private var currentSessionId :String?=null
 
     private fun sendMessage(userMessage: String) {
-        val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE)
         val token = prefs.getString("authToken", null)
 
         if (token == null) {
@@ -104,12 +103,12 @@ class ChatActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch{
             try {
 
-                val response = RetrofitClient.api.sendMessage("Bearer $token", request)
+                val response = ApiService.sendMessage("Bearer $token", request)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         val chatResp = response.body()!!
-                        val botReply = chatResp.ai_response?.content ?: "No reply"
+                        val botReply = AiResponse.content ?: "No reply"
 
                         // Add user message
                         addMessage(
@@ -126,13 +125,13 @@ class ChatActivity : AppCompatActivity() {
                             ChatMessage(
                                 botReply,
                                 isUser = false,
-                                emotion = chatResp.ai_response?.role ?: "assistant",
+                                emotion = AiResponse.role ?: "assistant",
                                 message = botReply
                             )
                         )
 
                         // Save session id for continuity
-                        chatResp.session_id?.let { currentSessionId = it }
+                        ChatResponse.session_id?.let { currentSessionId = it }
                     } else {
                         addMessage(
                             ChatMessage(

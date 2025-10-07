@@ -1,11 +1,11 @@
-package com.example.stressease
+package com.example.stressease.Chats
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.stressease.R
 
 class ChatAdapter(private val messages: List<ChatMessage>):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
