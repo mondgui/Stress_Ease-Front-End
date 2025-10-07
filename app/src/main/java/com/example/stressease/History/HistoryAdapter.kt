@@ -1,10 +1,11 @@
-package com.example.stressease
+package com.example.stressease.History
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.stressease.R
 
 data class ChatHistoryItem(
     val userMessage: String,
