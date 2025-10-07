@@ -1,4 +1,4 @@
-package com.example.stressease
+package com.example.stressease.SOS
 
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +7,9 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.stressease.Api.CrisisContact
+import com.example.stressease.Api.RetrofitClient
+import com.example.stressease.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
