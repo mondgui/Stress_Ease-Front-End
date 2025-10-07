@@ -1,4 +1,4 @@
-package com.example.stressease
+package com.example.stressease.Leaderboard
 
 
 import android.os.Bundle
@@ -6,8 +6,10 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.stressease.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class Leaderboard : AppCompatActivity() {
     private lateinit var recyclerLeaderboard: RecyclerView
@@ -32,7 +34,7 @@ class Leaderboard : AppCompatActivity() {
         db.collection("users")
             .orderBy(
                 "score",
-                com.google.firebase.firestore.Query.Direction.DESCENDING
+                Query.Direction.DESCENDING
             ) // sort by score
             .limit(20) // top 20 users
             .get()
