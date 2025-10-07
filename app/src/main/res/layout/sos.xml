@@ -17,7 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- The key fix: height = match_parent + gravity center -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
