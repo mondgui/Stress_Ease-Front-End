@@ -1,8 +1,13 @@
-package com.example.stressease
+package com.example.stressease.LoginMain
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.stressease.Chats.ChatActivity
+import com.example.stressease.MoodActivity
+import com.example.stressease.R
+import com.example.stressease.ReportsActivity
+import com.example.stressease.Suggestions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
