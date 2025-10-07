@@ -1,6 +1,5 @@
-package com.example.stressease
+package com.example.stressease.LoginMain
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -9,8 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.stressease.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity: AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -31,7 +30,7 @@ class LoginActivity: AppCompatActivity() {
         loginBtn = findViewById(R.id.btnLogin)
         registerBtn = findViewById(R.id.btnRegister)
 
-        pref=getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        pref=getSharedPreferences("AppPrefs", MODE_PRIVATE)
 
         loginBtn.setOnClickListener {
             val email = emailInput.text.toString().trim()
