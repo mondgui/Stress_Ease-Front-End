@@ -14,9 +14,7 @@ class SOSAdapter:RecyclerView.Adapter<SOSAdapter.ViewHolder>(){
     private var contacts: List<CrisisContact> = emptyList()
 
     fun setData(list: List<CrisisContact>?) {
-        if (list != null) {
-            contacts = list
-        }
+        contacts = list.orEmpty()
         notifyDataSetChanged()
     }
 

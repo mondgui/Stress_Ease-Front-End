@@ -1,11 +1,11 @@
-package com.example.stressease
+package com.example.stressease.Api
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL="https://948e56466802.ngrok-free.app"
+    private const val BASE_URL="https://1a30fd950009.ngrok-free.app"
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
