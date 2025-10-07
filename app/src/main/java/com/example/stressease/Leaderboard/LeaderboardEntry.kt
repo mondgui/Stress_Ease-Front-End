@@ -1,4 +1,4 @@
-package com.example.stressease
+package com.example.stressease.Leaderboard
 
 data class LeaderboardEntry(
     val username: String = "",
