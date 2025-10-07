@@ -1,9 +1,9 @@
-package com.example.stressease
+package com.example.stressease.LocalStorageOffline
 
 import android.content.Context
+import com.example.stressease.Chats.ChatMessage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.json.JSONArray
 
 object SharedPreference {
     private const val PREFS_NAME = "StressEasePrefs"
