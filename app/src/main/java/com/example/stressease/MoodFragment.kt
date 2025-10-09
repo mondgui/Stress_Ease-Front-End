@@ -1,21 +1,17 @@
 package com.example.stressease
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.stressease.Chats.ChatActivity
+import com.example.stressease.LocalStorageOffline.SharedPreference
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MoodActivity: AppCompatActivity() {
     private lateinit var mood: Spinner

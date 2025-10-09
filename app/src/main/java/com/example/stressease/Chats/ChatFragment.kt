@@ -9,11 +9,13 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.stressease.Api.AiResponse
 import com.example.stressease.Api.ApiService
 import com.example.stressease.Api.ChatRequest
 import com.example.stressease.Api.ChatResponse
+import com.example.stressease.Api.RetrofitClient
 import com.example.stressease.History.History
 import com.example.stressease.R
 import com.example.stressease.SOS.SOS
@@ -70,7 +72,6 @@ class ChatActivity : AppCompatActivity() {
                 sendMessage(userMessage) // now works properly
             }
         }
-
         next.setOnClickListener {
             startActivity(Intent(this, History::class.java))
             finish()
@@ -80,7 +81,6 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
     }
-
     private fun addMessage(chatMessage: ChatMessage) {
         messages.add(chatMessage)
         chatAdapter.notifyItemInserted(messages.size - 1)
@@ -100,15 +100,14 @@ class ChatActivity : AppCompatActivity() {
 
         val request = ChatRequest(userMessage, session_id = currentSessionId)
 
-        CoroutineScope(Dispatchers.IO).launch{
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-
-                val response = ApiService.sendMessage("Bearer $token", request)
+                val response = RetrofitClient.api.sendMessage("Bearer $token", request)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body() != null) {
                         val chatResp = response.body()!!
-                        val botReply = AiResponse.content ?: "No reply"
+                        val botReply = chatResp.ai_response?.content ?: "No reply"
 
                         // Add user message
                         addMessage(
@@ -125,38 +124,21 @@ class ChatActivity : AppCompatActivity() {
                             ChatMessage(
                                 botReply,
                                 isUser = false,
-                                emotion = AiResponse.role ?: "assistant",
+                                emotion = chatResp.ai_response?.role ?: "assistant",
                                 message = botReply
                             )
                         )
-
-                        // Save session id for continuity
-                        ChatResponse.session_id?.let { currentSessionId = it }
                     } else {
-                        addMessage(
-                            ChatMessage(
-                                "Error: ${response.code()}",
-                                isUser = false,
-                                emotion = "neutral",
-                                message = ""
-                            )
-                        )
+                        Toast.makeText(this@ChatActivity, "Error: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
-
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    addMessage(
-                        ChatMessage(
-                            "Failed: ${e.localizedMessage}",
-                            isUser = false,
-                            emotion = "neutral",
-                            message = ""
-                        )
-                    )
+                    Toast.makeText(this@ChatActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+
     }
     private fun saveChatMessage(chatMessage: ChatMessage) {
         val userId = auth.currentUser?.uid ?: return
