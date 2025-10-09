@@ -1,9 +1,15 @@
-package com.example.stressease
+package com.example.stressease.LoginMain
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.stressease.Chats.ChatActivity
+import com.example.stressease.MoodActivity
+import com.example.stressease.QuizActivity
+import com.example.stressease.R
+import com.example.stressease.ReportsActivity
+import com.example.stressease.Summary
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,26 +46,21 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ReportsActivity::class.java))
         }
 
-        // Journal
-        btnJournal.setOnClickListener {
-            startActivity(Intent(this, JournalActivity::class.java))
-        }
 
-        // Breathing
-        btnBreathing.setOnClickListener {
-            startActivity(Intent(this, BreathingActivity::class.java))
-        }
 
         // Summary
         btnSummary.setOnClickListener {
-            startActivity(Intent(this, SummaryActivity::class.java))
+            startActivity(Intent(this, Summary::class.java))
         }
+
 
         // Logout
         btnLogout.setOnClickListener {
+            // Clear session (optional)
             val prefs = getSharedPreferences("StressEasePrefs", MODE_PRIVATE)
             prefs.edit().clear().apply()
 
+            // Redirect to login
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -67,3 +68,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

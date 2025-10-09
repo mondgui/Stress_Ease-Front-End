@@ -1,54 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_chat_gradient">
+
 
     <TextView
         android:id="@+id/tvProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="104dp"
         android:text="@string/Question_1_of_10"
-        android:textSize="16sp"
         android:textColor="@android:color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="8dp"
-        android:progress="10"
-        android:max="100"
-        android:progressDrawable="@drawable/progress_bar"
-        app:layout_constraintTop_toBottomOf="@id/tvProgress"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="40dp"
+        android:max="100"
+        android:progress="10"
+        android:progressDrawable="@drawable/progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.375"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvProgress" />
 
-    <!-- Question Text -->
     <TextView
         android:id="@+id/tvQuestion"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="36dp"
+        android:gravity="center"
         android:text="I get upset easily over small things."
+        android:textColor="@android:color/black"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/progressBar"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"
-        android:layout_marginHorizontal="24dp"/>
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
-    <!-- Answer Options Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/answerCard"
         android:layout_width="0dp"
@@ -62,78 +63,82 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <RadioGroup
-            android:id="@+id/radioGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <RadioButton
-                android:id="@+id/opt1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Never"
-                android:textSize="18sp"/>
-
-            <RadioButton
-                android:id="@+id/opt2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sometimes"
-                android:textSize="18sp"/>
-
-            <RadioButton
-                android:id="@+id/opt3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Often"
-                android:textSize="18sp"/>
-
-            <RadioButton
-                android:id="@+id/opt4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Always"
-                android:textSize="18sp"/>
-        </RadioGroup>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Next Button -->
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnNext"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="107dp"
+        android:layout_height="88dp"
+        android:backgroundTint="@color/teal_700"
         android:text="Next"
         android:textAllCaps="false"
-        android:textStyle="bold"
-        android:textSize="15sp"
         android:textColor="@android:color/black"
-        android:backgroundTint="@color/teal_700"
+        android:textSize="15sp"
+        android:textStyle="bold"
         app:cornerRadius="30dp"
-        app:layout_constraintTop_toBottomOf="@id/answerCard"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="40dp"/>
+        app:layout_constraintHorizontal_bias="0.907"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/answerCard" />
 
-    <!-- Back Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnback"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:backgroundTint="@color/teal_700"
         android:text="Back"
         android:textAllCaps="false"
-        android:textStyle="bold"
-        android:textSize="15sp"
         android:textColor="@android:color/black"
-        android:backgroundTint="@color/smiley_yellow"
+        android:textSize="15sp"
+        android:textStyle="bold"
         app:cornerRadius="30dp"
-        app:layout_constraintTop_toBottomOf="@id/btnNext"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="24dp"/>
+        app:layout_constraintHorizontal_bias="0.069"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/answerCard"
+        app:layout_constraintVertical_bias="0.54" />
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="288dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <RadioButton
+            android:id="@+id/opt1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Never"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/opt2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sometimes"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/opt3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Often"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/opt4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Always"
+            android:textSize="18sp" />
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
