@@ -1,14 +1,31 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-<!-- Base application theme -->
+    <!-- Base application theme. -->
     <style name="Base.Theme.StressEase" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color -->
+        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/green_accent</item>
-        <!-- Secondary (you can keep it same for simplicity) -->
+        <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/smiley_yellow</item>
-        <!-- Status bar color -->
+        <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/green_accent</item>
     </style>
 
-    <style name="Theme.StressEase" parent="Base.Theme.StressEase"/>
+    <style name="Theme.StressEase" parent="Base.Theme.StressEase" />
+
+    <!-- ADD THIS NEW STYLE FOR YOUR DASHBOARD BUTTONS -->
+    <style name="DashboardButton" parent="Widget.Material3.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="backgroundTint">@color/teal_700</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:elevation">4dp</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+
+
 </resources>

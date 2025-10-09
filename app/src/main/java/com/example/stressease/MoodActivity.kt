@@ -1,23 +1,17 @@
 package com.example.stressease
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class MoodActivity: AppCompatActivity() {
+class MoodActivity : AppCompatActivity() {
     private lateinit var mood: Spinner
     private lateinit var analyzeBtn: Button
     private lateinit var resultView: TextView
@@ -38,6 +32,7 @@ class MoodActivity: AppCompatActivity() {
 
         val back: Button = findViewById(R.id.btnBack)
         val next: Button = findViewById(R.id.btnNext)
+
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.mood_options,
@@ -45,7 +40,6 @@ class MoodActivity: AppCompatActivity() {
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         mood.adapter = adapter
-
 
         loadLastMood()
 
@@ -59,7 +53,6 @@ class MoodActivity: AppCompatActivity() {
             if (selectedMood.isNullOrEmpty()) {
                 Toast.makeText(this, "Please select a mood first", Toast.LENGTH_SHORT).show()
             } else {
-                // Save before navigating
                 saveMood(selectedMood)
                 val oldMoods = SharedPreference.loadStringList(this, "mood_history").toMutableList()
                 oldMoods.add(selectedMood)
@@ -85,13 +78,13 @@ class MoodActivity: AppCompatActivity() {
             Toast.makeText(this, "Mood saved: $selectedMood", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun loadLastMood() {
         val userId = auth.currentUser?.uid ?: return
 
         db.collection("users")
             .document(userId)
             .collection("moods")
-
             .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .limit(1)
             .get()

@@ -15,6 +15,7 @@ import retrofit2.Response
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.compose.ui.semantics.text
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -60,13 +61,23 @@ class ChatActivity : AppCompatActivity() {
         btnSend.setOnClickListener {
             val userMessage = etMessage.text.toString().trim()
             if (userMessage.isNotEmpty()) {
-                addMessage(ChatMessage(userMessage, isUser = true, emotion = "neutral",message=userMessage))
-                saveChatMessage(ChatMessage(userMessage,isUser = true, emotion = "neutral",message=userMessage))
+                // Change it back to 'message ='
+                addMessage(ChatMessage(message = userMessage, isUser = true, emotion = "neutral"))
+
+                saveChatMessage(
+                    // Change it back to 'message ='
+                    ChatMessage(
+                        message = userMessage,
+                        isUser = true,
+                        emotion = "neutral"
+                    )
+                )
                 Toast.makeText(this, "Message saved", Toast.LENGTH_SHORT).show()
                 etMessage.text.clear()
                 sendMessage(userMessage)
             }
         }
+
 
         next.setOnClickListener {
             startActivity(Intent(this, ReportsActivity::class.java))
@@ -77,6 +88,7 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
     }
+
     private fun addMessage(chatMessage: ChatMessage) {
         messages.add(chatMessage)
         chatAdapter.notifyItemInserted(messages.size - 1)
@@ -87,17 +99,21 @@ class ChatActivity : AppCompatActivity() {
 
     private fun sendMessage(userMessage: String) {
 
-        addMessage(ChatMessage("Analyzing...", isUser = false, emotion = "neutral",message=userMessage))
+        // Corrected: The message is "Analyzing...", and we use named arguments properly.
+        addMessage(ChatMessage(message = "Analyzing...", isUser = false))
 
         val request = mapOf("message" to userMessage)
 
+// Now call the API on a new line
         RetrofitClient.api.sendChat(request).enqueue(object : Callback<Map<String, String>> {
             override fun onResponse(
                 call: Call<Map<String, String>>,
                 response: Response<Map<String, String>>
             ) {
 
-                if (messages.isNotEmpty() && messages.last().text == "Analyzing...") {
+
+                // Corrected: Changed .text to .message
+                if (messages.isNotEmpty() && messages.last().message == "Analyzing...") {
                     messages.removeAt(messages.size - 1)
                     chatAdapter.notifyItemRemoved(messages.size)
                 }
@@ -106,36 +122,47 @@ class ChatActivity : AppCompatActivity() {
                     val body = response.body()!!
                     val botReply = body["reply"] ?: "No response"
                     val emotion = body["emotion"] ?: "neutral"
-                    addMessage(ChatMessage(botReply, isUser = false, emotion = emotion,message=userMessage))
+                    // Corrected: The message is botReply.
+                    addMessage(ChatMessage(message = botReply, isUser = false, emotion = emotion))
                 } else {
-                    addMessage(ChatMessage("Error: Could not get response", isUser = false,emotion="Neutral",message=userMessage))
+                    // Corrected: The message is the error string.
+                    addMessage(
+                        ChatMessage(
+                            message = "Error: Could not get response",
+                            isUser = false
+                        )
+                    )
                 }
             }
 
             override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                if (messages.isNotEmpty() && messages.last().text == "Analyzing...") {
+                // Corrected: Changed .text to .message
+                if (messages.isNotEmpty() && messages.last().message == "Analyzing...") {
                     messages.removeAt(messages.size - 1)
                     chatAdapter.notifyItemRemoved(messages.size)
                 }
-                addMessage(ChatMessage("Failed to connect: ${t.message}", isUser = false,emotion="Neutral",message=userMessage))
+                // Corrected: The message is the failure string.
+                addMessage(ChatMessage(message = "Failed to connect: ${t.message}", isUser = false))
             }
         })
     }
-    private fun saveChatMessage(chatMessage: ChatMessage){
+
+    private fun saveChatMessage(chatMessage: ChatMessage) {
         val userId = auth.currentUser?.uid ?: return
         val chatData = hashMapOf(
-            "message" to chatMessage.text,
+            "message" to chatMessage.message, // <--- Corrected this line
             "sender" to "user",
             "emotion" to chatMessage.emotion,
             "timestamp" to System.currentTimeMillis()
-
         )
         db.collection("users")
             .document(userId)
             .collection("chats")
             .add(chatData)
             .addOnSuccessListener {
-                Toast.makeText(this, "Chat saved", Toast.LENGTH_SHORT).show()
+                // This Toast is redundant since you already have one in btnSend.setOnClickListener
+                // Toast.makeText(this, "Chat saved", Toast.LENGTH_SHORT).show()
             }
     }
 }
+

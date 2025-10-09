@@ -4,31 +4,61 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_chat_gradient">
+
     <ImageView
         android:id="@+id/smileyBackground"
         android:layout_width="220dp"
         android:layout_height="220dp"
         android:layout_gravity="center"
         android:alpha="0.7"
-        android:visibility="visible"
         android:contentDescription="@string/chat"
         android:src="@drawable/ic_smiley"
+        android:visibility="visible"
         app:tint="@null"
         tools:ignore="ImageContrastCheck" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/text_black" />
+
+        <!-- START: ADDED NEXT BUTTON -->
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/next"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!-- END: ADDED NEXT BUTTON -->
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvChat"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="12dp"
             android:clipToPadding="false"
             android:overScrollMode="never"
-            app:layout_constraintTop_toTopOf="parent"
+            android:padding="12dp"
             app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/btnBack" /> <!-- Keep this constrained to btnBack to align below the buttons -->
+
         <LinearLayout
             android:id="@+id/messageInputLayout"
             android:layout_width="0dp"
@@ -36,8 +66,9 @@
             android:orientation="horizontal"
             android:padding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
             <EditText
                 android:id="@+id/etMessage"
                 android:layout_width="0dp"
@@ -47,12 +78,13 @@
                 android:background="@drawable/bg_input_box"
                 android:hint="@string/type_a_message"
                 android:inputType="text"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 android:padding="14dp"
                 android:textColor="@color/text_black"
                 android:textColorHint="@color/text_black"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 tools:ignore="VisualLintTextFieldSize" />
+
             <ImageButton
                 android:id="@+id/btnSend"
                 android:layout_width="64dp"
@@ -66,3 +98,4 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
+

@@ -5,13 +5,103 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/chat_background"
     tools:context=".MainActivity">
+
     <TextView
+        android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="48dp"
+        android:text="Welcome to StressEase"
+        android:textColor="@color/text_black"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:columnCount="2"
+        app:rowCount="4"
+        app:layout_constraintBottom_toTopOf="@+id/btnLogout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvWelcome">
+
+        <!-- Row 1 -->
+        <Button
+            android:id="@+id/btnQuiz"
+            style="@style/DashboardButton"
+            android:text="Take Stress Quiz"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+
+        <Button
+            android:id="@+id/btnMood"
+            style="@style/DashboardButton"
+            android:text="Log Your Mood"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+
+        <!-- Row 2 -->
+        <Button
+            android:id="@+id/btnChat"
+            style="@style/DashboardButton"
+            android:text="Chat with AI"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+
+        <Button
+            android:id="@+id/btnReports"
+            style="@style/DashboardButton"
+            android:text="View Reports"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+
+        <!-- Row 3 -->
+        <Button
+            android:id="@+id/btnJournal"
+            style="@style/DashboardButton"
+            android:text="Daily Journal"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+
+        <Button
+            android:id="@+id/btnSummary"
+            style="@style/DashboardButton"
+            android:text="Weekly Summary"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+
+        <!-- Row 4 -->
+        <Button
+            android:id="@+id/btnBreathing"
+            style="@style/DashboardButton"
+            android:text="Breathing Exercise"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill" />
+    </androidx.gridlayout.widget.GridLayout>
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:padding="12dp"
+        android:text="Logout"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

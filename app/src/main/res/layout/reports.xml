@@ -16,7 +16,7 @@
             android:id="@+id/tvReportTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/ConditionReport"
+            android:text="Condition Report"
             android:textSize="24sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -51,30 +51,72 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-
-            android:radius="12dp"/>
-
+            android:radius="12dp">
 
             <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/moodChart"
+                android:id="@+id/emotionBarChart"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
+                android:layout_height="300dp" />
+        </androidx.cardview.widget.CardView>
 
         <!-- Pie Chart Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/chartPieCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:radius="12dp"/>
-
+            android:layout_marginBottom="20dp"
+            android:radius="12dp">
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/moodPieChart"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="300dp" />
+        </androidx.cardview.widget.CardView>
 
+        <!-- Line Chart Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/chartLineCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:radius="12dp">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/moodTrendChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Navigation Buttons -->
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/smiley_yellow"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnViewSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Summary"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/teal_700"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Go to Dashboard"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/green_accent"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
 
         <!-- Download PDF Button -->
         <Button

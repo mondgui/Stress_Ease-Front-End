@@ -3,11 +3,7 @@ package com.example.stressease
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,21 +40,26 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ReportsActivity::class.java))
         }
 
+        // Journal
+        btnJournal.setOnClickListener {
+            startActivity(Intent(this, JournalActivity::class.java))
+        }
 
+        // Breathing
+        btnBreathing.setOnClickListener {
+            startActivity(Intent(this, BreathingActivity::class.java))
+        }
 
         // Summary
         btnSummary.setOnClickListener {
-            startActivity(Intent(this, Summary::class.java))
+            startActivity(Intent(this, SummaryActivity::class.java))
         }
-
 
         // Logout
         btnLogout.setOnClickListener {
-            // Clear session (optional)
             val prefs = getSharedPreferences("StressEasePrefs", MODE_PRIVATE)
             prefs.edit().clear().apply()
 
-            // Redirect to login
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -66,4 +67,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-

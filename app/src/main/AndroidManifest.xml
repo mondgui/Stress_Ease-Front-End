@@ -33,6 +33,9 @@
             android:exported="true"/>
         <activity android:name=".Suggestions"
             android:exported="true"/>
+        <activity android:name=".Summary"
+            android:exported="true"/>
+
 
     </application>
 

@@ -18,5 +18,19 @@
     <string name="Sample_Toast">Sample Tost</string>
 
     <string name="ConditionReport">Condition Report</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+
+
+    <string-array name="mood_options">
+        <item>Happy</item>
+        <item>Sad</item>
+        <item>Stressed</item>
+        <item>Excited</item>
+        <item>Angry</item>
+        <item>Calm</item>
+        <item>Confused</item>
+    </string-array>
+
 
 </resources>

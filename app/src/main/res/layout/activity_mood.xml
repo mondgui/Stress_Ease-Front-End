@@ -14,6 +14,13 @@
         android:hint="How are you feeling today?"
         android:inputType="textCapSentences" />
 
+    <Spinner
+        android:id="@+id/spinnerMood"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:spinnerMode="dropdown" />
+
     <Button
         android:id="@+id/analyzeBtn"
         android:layout_width="wrap_content"
@@ -29,5 +36,19 @@
         android:layout_marginTop="24dp"
         android:text="Your mood analysis will appear here."
         android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Back to Quiz" />
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Continue to Chat" />
 
 </LinearLayout>
