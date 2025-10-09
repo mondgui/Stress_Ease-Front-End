@@ -8,15 +8,16 @@
 
     <TextView
         android:id="@+id/tvWelcome"
-        android:layout_width="194dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="96dp"
+        android:layout_width="330dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="84dp"
         android:text="Welcome, User"
         android:textColor="@android:color/black"
         android:textSize="22sp"
         android:textStyle="bold"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
