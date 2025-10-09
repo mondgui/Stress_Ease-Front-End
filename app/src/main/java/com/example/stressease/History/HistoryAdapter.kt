@@ -22,7 +22,8 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() 
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_chat_history, parent, false)
+            .inflate(R.layout.item_history_row, parent, false) // Use the new row layout here
+
         return HistoryViewHolder(view)
     }
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {

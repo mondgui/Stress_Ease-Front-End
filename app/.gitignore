@@ -1,1 +1,5 @@
+# Heap-dump files
+*.hprof
+
+# Build files
 /build
