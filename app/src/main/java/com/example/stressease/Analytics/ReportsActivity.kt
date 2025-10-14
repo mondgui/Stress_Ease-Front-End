@@ -1,27 +1,22 @@
 package com.example.stressease
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.pdf.PdfDocument
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.stressease.LocalStorageOffline.SharedPreference
+import com.example.stressease.LoginMain.MainActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import java.io.File
-import java.io.FileOutputStream
 
 class ReportsActivity : AppCompatActivity() {
 

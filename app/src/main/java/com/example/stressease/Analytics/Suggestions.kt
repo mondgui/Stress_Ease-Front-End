@@ -13,11 +13,11 @@ class Suggestions : AppCompatActivity() {
          val back:Button=findViewById<Button>(R.id.btnBack)
          val front:Button=findViewById<Button>(R.id.btnNext)
          back.setOnClickListener {
-             startActivity(Intent(this, QuizActivity::class.java))
+             startActivity(Intent(this, QuizFragment::class.java))
              finish()
          }
          front.setOnClickListener {
-             startActivity(Intent(this, MoodActivity::class.java))
+             startActivity(Intent(this, MoodFragment::class.java))
              finish()
          }
             val score = intent.getIntExtra("score", 0)

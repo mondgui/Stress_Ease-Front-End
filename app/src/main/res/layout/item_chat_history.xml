@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F9F9F9"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="10dp"
+    android:background="@drawable/bg_chat_gradient"
+    android:layout_margin="8dp">
 
     <TextView
+        android:id="@+id/tvUserMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chat History"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:layout_gravity="center"
-        android:paddingBottom="10dp"/>
+        android:textColor="#222"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewHistory"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"/>
+    <TextView
+        android:id="@+id/tvBotReply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#555"
+        android:textSize="15sp"
+        android:paddingTop="4dp" />
 </LinearLayout>
