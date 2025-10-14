@@ -7,7 +7,6 @@
     android:background="@drawable/bg_chat_gradient"
     android:padding="20dp">
 
-
     <Spinner
         android:id="@+id/spinnerMood"
         android:layout_width="0dp"
@@ -23,8 +22,8 @@
 
     <Button
         android:id="@+id/analyzeBtn"
-        android:layout_width="154dp"
-        android:layout_height="58dp"
+        android:layout_width="126dp"
+        android:layout_height="64dp"
         android:layout_marginTop="32dp"
         android:backgroundTint="@color/teal_700"
         android:text="Analyze Mood"
@@ -45,6 +44,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchMoodQuiz"
+        android:layout_width="163dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="4dp"
+        android:text="Switch to Quiz"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:thumbTint="@color/teal_700"
+        android:trackTint="@color/teal_200"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/resultCard"
@@ -71,7 +85,7 @@
         android:padding="8dp"
         android:text="Your mood analysis will appear here"
         android:textColor="@android:color/black"
-        android:textSize="18sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/resultCard"
@@ -79,25 +93,34 @@
 
     <Button
         android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="114dp"
+        android:layout_height="58dp"
         android:layout_marginStart="8dp"
         android:text="Back"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:background="@drawable/bg_rounded_button"
+        android:theme="@style/NoTintButtonTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/resultView"
-        app:layout_constraintVertical_bias="0.863" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="276dp"
+        android:layout_width="110dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="260dp"
+        android:background="@drawable/bg_rounded_button"
         android:text="Next"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:theme="@style/NoTintButtonTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/resultView"
-        app:layout_constraintVertical_bias="0.866" />
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
