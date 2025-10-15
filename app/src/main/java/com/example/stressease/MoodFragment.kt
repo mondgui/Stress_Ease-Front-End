@@ -2,126 +2,169 @@ package com.example.stressease
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.example.stressease.Chats.ChatActivity
-import com.example.stressease.LocalStorageOffline.SharedPreference
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import androidx.fragment.app.Fragment
+import com.google.android.material.switchmaterial.SwitchMaterial
+import org.w3c.dom.Text
 
-class MoodActivity: AppCompatActivity() {
-    private lateinit var mood: Spinner
-    private lateinit var analyzeBtn: Button
-    private lateinit var resultView: TextView
+class MoodFragment : Fragment(){
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_mood, container, false)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mood)
+    }
+    private lateinit var switchMoodQuiz : SwitchMaterial
+    private lateinit var spinnerMood: Spinner
+    private lateinit var analyzeBtn:Button
+    private lateinit var result: TextView
 
-        auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+    private val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+    private val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
 
-        mood = findViewById(R.id.spinnerMood)
-        analyzeBtn = findViewById(R.id.analyzeBtn)
-        resultView = findViewById(R.id.resultView)
 
-        val back: Button = findViewById(R.id.btnBack)
-        val next: Button = findViewById(R.id.btnNext)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        spinnerMood = view.findViewById<Spinner>(R.id.spinnerMood)
+        super.onViewCreated(view, savedInstanceState)
+        // Spinner setup
         val adapter = ArrayAdapter.createFromResource(
-            this,
+            requireContext(),
             R.array.mood_options,
             android.R.layout.simple_spinner_item
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        mood.adapter = adapter
+        spinnerMood.adapter = adapter
+        switchMoodQuiz = view.findViewById<SwitchMaterial>(R.id.switchMoodQuiz)
+
+        analyzeBtn = view.findViewById<Button>(R.id.analyzeBtn)
+        result = view.findViewById(R.id.resultView)
 
 
-        loadLastMood()
+                // Default message
+        result.text = "Your mood analysis will appear here"
 
-        back.setOnClickListener {
-            startActivity(Intent(this, QuizActivity::class.java))
-            finish()
-        }
-        next.setOnClickListener {
-            val selectedMood = mood.selectedItem?.toString()
-            if (selectedMood.isNullOrEmpty()) {
-                Toast.makeText(this, "Please select a mood first", Toast.LENGTH_SHORT).show()
+        // 🔘 Switch logic → open QuizActivity instead of replacing fragment
+        switchMoodQuiz.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                switchMoodQuiz.text = "Switch to Mood"
+                // Start Quiz Activity
+                val intent = Intent(requireContext(), QuizFragment::class.java)
+                startActivity(intent)
+                // Optional smooth transition
+                requireActivity().overridePendingTransition(
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out
+                )
+                // Reset the switch after launching Quiz
+                switchMoodQuiz.isChecked = false
             } else {
-                // Save before navigating
-                saveMood(selectedMood)
-                val oldMoods = SharedPreference.loadStringList(this, "mood_history").toMutableList()
-                oldMoods.add(selectedMood)
-                SharedPreference.saveStringList(this, "mood_history", oldMoods)
-
-                startActivity(Intent(this, ChatActivity::class.java))
-                finish()
+                switchMoodQuiz.text = "Switch to Quiz"
             }
         }
 
+        // Analyze button logic
         analyzeBtn.setOnClickListener {
-            val selectedMood = mood.selectedItem?.toString()
-            if (selectedMood.isNullOrEmpty()) {
-                Toast.makeText(this, "Please select a mood first", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val mood = spinnerMood.selectedItem?.toString()
+            if (!mood.isNullOrEmpty()) {
+                result.text = "Your current mood: $mood"
+            } else {
+                Toast.makeText(requireContext(), "Please select a mood", Toast.LENGTH_SHORT).show()
             }
-            saveMood(selectedMood)
+            val moodMessage = when (mood) {
+                "Happy" -> "😊 Great! Keep spreading positivity."
+                "Sad" -> "😔 Take some rest and listen to calming music."
+                "Angry" -> "😤 Try deep breathing to relax your mind."
+                "Stressed" -> "😩 A short walk or meditation might help."
+                "Neutral" -> "🙂 Stay calm and balanced throughout your day."
+                else -> "😐 Your mood seems neutral. Stay mindful!"
+            }
 
-            val oldMoods = SharedPreference.loadStringList(this, "mood_history").toMutableList()
-            oldMoods.add(selectedMood)
-            SharedPreference.saveStringList(this, "mood_history", oldMoods)
+            result.text = moodMessage
 
-            Toast.makeText(this, "Mood saved: $selectedMood", Toast.LENGTH_SHORT).show()
+            saveMoodToFirestore(mood.toString())
+
         }
     }
-    private fun loadLastMood() {
-        val userId = auth.currentUser?.uid ?: return
 
-        db.collection("users")
+        private fun saveMoodToFirestore(selectedMood: String) {
+            val userId = auth.currentUser?.uid ?: return
+            val moodData = hashMapOf(
+                "mood" to selectedMood,
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            db.collection("users")
+                .document(userId)
+                .collection("moodLogs")
+                .add(moodData)
+                .addOnSuccessListener {
+                    generateInstantWeeklyReport(userId)
+                }
+                .addOnFailureListener {
+                    result.text = "Error saving mood: ${it.message}"
+                }
+        }
+       private fun generateInstantWeeklyReport(userId: String) {
+
+           db.collection("users")
             .document(userId)
-            .collection("moods")
-
-            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .limit(1)
+            .collection("moodLogs")
             .get()
-            .addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    val lastMood = documents.documents[0].getString("mood")
-                    val adapter = mood.adapter
-                    if (lastMood != null && adapter != null) {
-                        for (i in 0 until adapter.count) {
-                            if (adapter.getItem(i).toString() == lastMood) {
-                                mood.setSelection(i)
-                                break
-                            }
-                        }
+            .addOnSuccessListener { snap ->
+                val moodCounts = mutableMapOf<String, Int>()
+                val now = System.currentTimeMillis()
+                val sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000
+
+                for (doc in snap) {
+                    val mood = doc.getString("mood") ?: continue
+                    val timestamp = doc.getLong("timestamp") ?: continue
+                    if (timestamp >= sevenDaysAgo) {
+                        moodCounts[mood] = (moodCounts[mood] ?: 0) + 1
                     }
+                }
+
+                if (moodCounts.isNotEmpty()) {
+                    val total = moodCounts.values.sum()
+                    val topMood = moodCounts.maxByOrNull { it.value }?.key ?: "Neutral"
+                    val topMoodPercent = (moodCounts[topMood]!! * 100 / total)
+
+                    val reportText = buildString {
+                        append("\n📊 Weekly Mood Report:\n")
+                        append("• Dominant Mood: $topMood ($topMoodPercent%)\n")
+                        append("• Total logs this week: $total\n\n")
+                        append("🗓 Mood Breakdown:\n")
+
+                        moodCounts.forEach { (mood, count) ->
+                            val bar = "█".repeat((count * 5 / total).coerceAtLeast(1))
+                            append("$mood — $bar ($count)\n")
+                        }
+
+                        append("\n💡 Insight: ${getMoodInsight(topMood)}")
+                    }
+
+                    result.text=reportText
+                } else {
+                    result.text = "No mood logs for this week yet."
                 }
             }
     }
-
-    private fun saveMood(selectedMood: String) {
-        val userId = auth.currentUser?.uid ?: return
-
-        val moodData = hashMapOf(
-            "mood" to selectedMood,
-            "timestamp" to System.currentTimeMillis()
-        )
-        db.collection("users")
-            .document(userId)
-            .collection("moods")
-            .add(moodData)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Mood saved: $selectedMood", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to save mood", Toast.LENGTH_SHORT).show()
-            }
+    private fun getMoodInsight(mood: String): String {
+        return when (mood) {
+            "Happy" -> "You’ve been in a positive state overall this week!"
+            "Sad" -> "Try journaling or light activity to lift your spirits."
+            "Stressed" -> "Take short breaks and focus on calm breathing."
+            "Angry" -> "Redirect your energy with exercise or art."
+            else -> "You seem balanced this week — great consistency!"
+        }
     }
+
 }
